@@ -23,11 +23,18 @@ console.log(testProp);
 let test = analisis
     .filter(el => el.length > 0)
     .map(el => {
-        Object.assign({}, el);
-        return {
-            Precio: el[0],
-            Habitaciones: el[1],
-            Metros: el[2],
-            Planta: el[3],
-        };
-    });
+            Object.assign({}, el);
+            return {
+                Precio: el[0],
+                Habitaciones: el[1],
+                Metros: el[2],
+                Planta: el[3],
+            });
+        let testProp = test.map(el => {
+            return {
+                Precio: el[0],
+                Habitaciones: el[1],
+                Metros: el[2],
+                Planta: el[3],
+            }
+        });

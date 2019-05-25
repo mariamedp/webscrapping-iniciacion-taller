@@ -1,0 +1,23 @@
+{
+  "name": "webscrapping-iniciacion-taller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VaqueroFontenla/webscrapping-iniciacion-taller.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VaqueroFontenla/webscrapping-iniciacion-taller/issues"
+  },
+  "homepage": "https://github.com/VaqueroFontenla/webscrapping-iniciacion-taller#readme",
+  "dependencies": {
+    "puppeteer": "^1.16.0"
+  }
+}
