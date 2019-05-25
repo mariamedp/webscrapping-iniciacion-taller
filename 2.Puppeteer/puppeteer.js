@@ -20,16 +20,32 @@ const fs = require('fs');
 
 let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/';
 
-(async() => {
+const miFuncion = async() => {
     try {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({ headless: false });
+        const context = await browser.createIncognitoBrowserContext();
         const page = await browser.newPage();
+
+        await page.setRequestInterception(true);
+
+        page.on('request', request => {
+            // Aquí localizamos el script que cargan anti-bot
+            // mirad el contenido del script : https://www.idealista.com/px/client/main.min.js
+            if (/main\.min.\js/.test(request.url())) {
+                console.log(`Skipping : [${request.url()}]`);
+                // Impedimos que se cargue
+                request.abort();
+            } else {
+                request.continue();
+            }
+        });
+
         await page.goto(url);
 
         let data = await page.evaluate(() => {
             let pisosData = [];
             let pisos = document.querySelectorAll('#main-content > section > article');
-
+            console.log("LENGTH DE PISOS", pisos.length)
             pisos.forEach((piso) => {
                 let pisoJson = {};
                 try {
@@ -40,20 +56,22 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
                     pisoJson.habitaciones = piso.querySelector('#main-content > section > article > div > span:nth-child(4)').innerText;
                     pisoJson.metros = piso.querySelector('#main-content > section > article > div > span:nth-child(5)').innerText;
                 } catch (exception) {
-
+                    console.log(exception);
                 }
                 pisosData.push(pisoJson);
 
             });
-            console.log(pisosData);
-
+            return pisosData;
         });
+        console.log(data);
         //     await console.log(data);
         //     await fs.writeFile('viviendas.json', JSON.stringfy(data), (err) => {
         //         if (err) console.log(err);
         //         console.log("Successfully Written to File.");
         //     });
     } catch (error) {
-
+        console.log(error);
     }
-})();
+};
+
+miFuncion();
