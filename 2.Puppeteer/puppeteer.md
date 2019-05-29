@@ -36,20 +36,26 @@ touch puppeteer.js
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch();
+  //Inicializar el navegador Chrome
+  const browser = await puppeteer.launch(); 
+  //Crear una nueva página en el contexto del navegador inicializado
   const page = await browser.newPage();
+  //Navegar a una página determinada.
   await page.goto('https://example.com');
+  //Genera el screenshot y lo salva el la ruta que le indiquemos
   await page.screenshot({path: 'example.png'});
-
+  //Genera el archivo pdf y lo guarda en la ruta que le indiquemos
+  await page.pdf({ path: 'example.pdf'});
+  //Cierra el navegador
   await browser.close();
 })();
-
-run();
 ```
+
+
 
 **¡Ahora si que empieza el Rock and roll!**
 
-
+Vamos a hacer un script con el que podamos 
 
 
 1. nomenclatura descriptiva (funciones de la ram de los pros);
