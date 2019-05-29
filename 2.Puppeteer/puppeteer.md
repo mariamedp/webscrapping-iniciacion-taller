@@ -22,7 +22,7 @@ Escribimos en la terminal:
 ```sh
 npm i puppeteer
 ```
-Puppeteer incluye la última versión de **chrome / chromium**, que garantiza que podamos el Chrome en modo headless. Por lo tanto, que no os extrañe que esta instalación demore un poquito.
+Puppeteer incluye la última versión de **chrome / chromium**, que garantiza que podamos trabajar con Chrome en modo headless. Por lo tanto, que no os extrañe que esta instalación demore un poquito.
 
 3. Creamos el archivo ```puppeteer.js``` donde probaremos escribiremos nuestro código.
 ```sh
@@ -46,6 +46,16 @@ const puppeteer = require('puppeteer');
 
 run();
 ```
+
+**¡Ahora si que empieza el Rock and roll!**
+
+
+
+
+1. nomenclatura descriptiva (funciones de la ram de los pros);
+2. template literal con los selctores
+3. rama checkout para los sobraos
+4. cats and dogs
 
 
 
