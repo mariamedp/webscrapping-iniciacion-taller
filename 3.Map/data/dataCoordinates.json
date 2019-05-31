@@ -1,4 +1,4 @@
-const data = [{
+[{
     "adId": 85517541,
     "adOperationId": 2,
     "adTypologyId": 1,
@@ -1423,13 +1423,4 @@ const data = [{
     "promocion": false,
     "textInfo": "",
     "thumbnail": ""
-}];
-
-const filterData = data.map((obj) => {
-    let newObj = {};
-    newObj.id = obj.adId;
-    newObj.latitude = obj.latitude;
-    newObj.longitude = obj.longitude;
-    return newObj;
-});
-console.log(filterData);
+}]

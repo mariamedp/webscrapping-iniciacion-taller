@@ -1,12 +1,96 @@
-fetch('https://www.idealista.com/ajax/listingcontroller/listingmapajax.ajax?locationUri=madrid%2Fretiro%2Fpacifico&typology=1&operation=2&freeText=&zoom=15&northEast=40.41882314534578%2C+-3.6615205554198837&southWest=40.38944412113415%2C+-3.69756944458004&uid=5sog5k6ba466f25qu404vwckqe8vbik5d813pun8zdqi&adfilter_pricemin=default&adfilter_price=default&adfilter_area=default&adfilter_areamax=default&adfilter_amenity=default&adfilter_homes=&adfilter_chalets=&adfilter_countryhouses=&adfilter_duplex=&adfilter_penthouse=&adfilter_rooms_0=&adfilter_rooms_1=&adfilter_rooms_2=&adfilter_rooms_3=&adfilter_rooms_4_more=&adfilter_baths_1=&adfilter_baths_2=&adfilter_baths_3=&adfilter_newconstruction=&adfilter_goodcondition=&adfilter_toberestored=&adfilter_housingpetsallowed=&adfilter_hasairconditioning=&adfilter_wardrobes=&adfilter_lift=&adfilter_flatlocation=&adfilter_parkingspace=&adfilter_garden=&adfilter_swimmingpool=&adfilter_hasterrace=&adfilter_boxroom=&adfilter_top_floor=&adfilter_intermediate_floor=&adfilter_ground_floor=&adfilter_agencyisabank=&adfilter_published=default&onlySavedAds=false')
-    .then((response) => {
-        return response.json();
-    })
-    .then((data) => {
-        localStorage.setItem('data', JSON.stringify(data));
-        console.log(data);
+// //PARA TRAERNOS LOS DATOS//
 
+// // Primera opcion con funciones de async-await;
+// //Definimos url
+// const urlData = './data/alquiler-distrito-retiro-pacifico.json';
+// const urlCoordinates = './data/dataCoordinates.json';
+// //Nos traemos los datos de nuestro .json sobre datos de viviendas.
+// const getData = async() => {
+//         let responseData = await fetch(urlData);
+//         let houstingData = await responseData.json()
+//         return houstingData
+//     }
+//     //Nos traemos los datos de nuestro .json sobre datos de coordenadas.
+// const getCoordinates = async() => {
+//     let responseCoordinates = await fetch(urlCoordinates);
+//     let coordinatesData = await responseCoordinates.json();
+//     return coordinatesData;
+// }
+
+
+// Segunda opcion en crear modulos de .js
+//Definimos url
+
+import { coordinates } from './dataCoordinates.js';
+import { alquileres } from './alquiler-distrito-retiro-pacifico.js';
+
+
+const COORDS_BY_ID = coordinates.reduce((old, cur, i, arr) => {
+    old[cur.id] = cur;
+    return old;
+}, {});
+
+const getCoords = (id) => {
+    COORDS_BY_ID.hasOwnProperty(id) ?
+        COORDS_BY_ID[id] : { latitude: 0, longitude: 0 }
+}
+
+console.log(alquileres);
+// var lista = alquileres
+//     .map(a => {
+//         let { latitude, longitude } = getCoords(a.id);
+//         return {...a, lat: latitude, lon: longitude }
+//     })
+
+
+//console.log(lista);
+
+
+
+
+
+
+//Función para eliminar los propiedades del JSON que no nos interesan
+const filterData = (coordinatesData) => {
+    let filtered = coordinatesData.map((obj) => {
+        let newObj = {};
+        newObj.id = obj.adId;
+        newObj.latitude = obj.latitude;
+        newObj.longitude = obj.longitude;
+        return newObj
     });
+    return filtered;
+}
+
+const getInfo = async() => {
+    let viviendas = await getData();
+    let coordinates = await getCoordinates();
+    let coordinatesFiltered = filterData(coordinates);
+    let info = viviendas
+        .concat(coordinatesFiltered)
+        .map((el) => {
+            el = Object.assign(el, el);
+        })
+        // .filter((el, i, self) => el)
+        // .filter((el, i, self) => (
+        //     self.findIndex($el => $el.id === el.id) === i
+        // ));
+        //return `${viviendas[0].id} es igual a ${coordinatesFiltered[0].id}`
+        //return info;
+    console.log(viviendas);
+    return coordinatesFiltered;
+
+}
+getInfo()
+    .then(mensaje => console.log(mensaje))
+    .catch(e => console.log(e));
+
+
+
+
+
+
+
 
 
 var map = L.map('map').setView([40.4034295, -3.688168], 13);
