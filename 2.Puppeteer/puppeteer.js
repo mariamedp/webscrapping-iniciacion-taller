@@ -40,7 +40,7 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
         // let housingData;
         // let data;
 
-        // //Extraemos la información: creamos un bucle que itera cada una de las páginas del navegador.
+        // // //Extraemos la información: creamos un bucle que itera cada una de las páginas del navegador.
         // for (let i = 2; i <= numPages; i++) {
         //     (housingData === undefined) ? housingData = []: housingData = [...data];
         //     data = await page.evaluate((housingData) => {
@@ -70,6 +70,7 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
         let urlCoords = `${url}/mapa-google`;
         await page.goto(urlCoords);
         await page.click('#map-zoom-high-button');
+
         let control = 0;
         const responseCoord = new Promise(resolve => {
             return page.on('response', async response => {
@@ -80,15 +81,16 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
                     }
                     const body = await response.text();
                     const json = JSON.parse(body);
-                    return resolve(JSON.parse(angular.toJson(json.jsonResponse.map.items)).map((obj) => {
+                    resolve(JSON.stringify(json.jsonResponse.map.items.map((obj) => {
                         let newObj = {};
                         newObj.id = obj.adId;
                         newObj.latitude = obj.latitude;
                         newObj.longitude = obj.longitude;
                         return newObj
-                    }));
+                    }))).substring(9, -1);
                 }
             });
+
 
         })
         await responseCoord;
@@ -101,7 +103,7 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
         //     console.log("Housting: Successfully Written to File.");
         // });
 
-        await fs.writeFile('coordenadas-distrito-retiro-pacifico.txt', responseCoord, (err) => {
+        fs.writeFile('coordenadas-distrito-retiro-pacifico.json', JSON.parse(responseCoord), (err) => {
             if (err) console.log(err);
             console.log("Coordenadas: Successfully Written to File.", responseCoord);
         });

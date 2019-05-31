@@ -62,12 +62,27 @@ L.esri.basemapLayer('Streets').addTo(map);
 
 function onEachFeature(feature, layer) {
     var popupContent = `${feature.properties.descripcion},
-    Habitaciones: ${feature.properties.habitaciones},
-    Metros cuadrados: ${feature.properties.metros},
-    Precio: ${feature.properties.precio},
-    `
+                        Habitaciones: ${feature.properties.habitaciones},
+                        Metros cuadrados: ${feature.properties.metros},
+                        Precio: ${feature.properties.precio},
+                        `
     layer.bindPopup(popupContent);
 }
 L.geoJSON(geoData, {
     onEachFeature: onEachFeature
 }).addTo(map);
+
+
+let cfg = {
+    // "radius": 2,
+    // "maxOpacity": .8,
+    // "scaleRadius": true,
+    // "useLocalExtrema": true,
+    latField: 'latitude',
+    lngField: 'longitude',
+    // which field name in your data represents the data value - default "value"
+    valueField: 'precio'
+};
+
+let heatmapLayer = new HeatmapOverlay(cfg);
+heatmapLayer.setData(geoData);
