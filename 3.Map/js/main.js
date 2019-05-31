@@ -58,6 +58,8 @@ console.log(fromArrayToGeoJSON(data));
 //Añadir el mapa base:
 var map = L.map('map').setView([40.4034295, -3.688168], 15);
 var geoData = fromArrayToGeoJSON(data);
+
+copy(console.log(geoData));
 L.esri.basemapLayer('Streets').addTo(map);
 
 function onEachFeature(feature, layer) {
@@ -71,18 +73,3 @@ function onEachFeature(feature, layer) {
 L.geoJSON(geoData, {
     onEachFeature: onEachFeature
 }).addTo(map);
-
-
-let cfg = {
-    // "radius": 2,
-    // "maxOpacity": .8,
-    // "scaleRadius": true,
-    // "useLocalExtrema": true,
-    latField: 'latitude',
-    lngField: 'longitude',
-    // which field name in your data represents the data value - default "value"
-    valueField: 'precio'
-};
-
-let heatmapLayer = new HeatmapOverlay(cfg);
-heatmapLayer.setData(geoData);

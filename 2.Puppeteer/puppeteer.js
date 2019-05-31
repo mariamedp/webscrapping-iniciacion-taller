@@ -35,77 +35,69 @@ let url = 'https://www.idealista.com/alquiler-viviendas/madrid/retiro/pacifico/'
         });
 
         await page.goto(url);
-        // const numPages = await getNumPages(page);
+        const numPages = await getNumPages(page);
 
-        // let housingData;
-        // let data;
+        let housingData;
+        let data;
 
-        // // //Extraemos la información: creamos un bucle que itera cada una de las páginas del navegador.
-        // for (let i = 2; i <= numPages; i++) {
-        //     (housingData === undefined) ? housingData = []: housingData = [...data];
-        //     data = await page.evaluate((housingData) => {
-        //         let housing = [...document.querySelectorAll('#main-content > section > article')];
-        //         housing.forEach((house) => {
-        //             let houseJson = {};
-        //             try {
-
-        //                 houseJson.descripcion = house.querySelector('.item-link').innerText;
-
-        //                 houseJson.id = house.querySelector('#main-content > section > article > div > a').href.slice(35, -1);;
-        //                 houseJson.precio = house.querySelector('#main-content > section > article > div > div.row.price-row.clearfix > span').innerText;
-        //                 houseJson.habitaciones = house.querySelector('#main-content > section > article > div > span:nth-child(4)').innerText;
-        //                 houseJson.metros = house.querySelector('#main-content > section > article > div > span:nth-child(5)').innerText;
-        //             } catch (exception) {
-        //                 console.log(exception);
-        //             }
-        //             housingData.push(houseJson);
-        //         });
-        //         return housingData;
-        //     }, housingData);
-        //     await page.waitFor(randomWait());
-        //     let pageUrl = url + `pagina-${i}.htm`;
-        //     await page.goto(pageUrl);
-        //     // console.log(data);
-        // }
+        //Extraemos la información: creamos un bucle que itera cada una de las páginas del navegador.
+        for (let i = 2; i <= numPages; i++) {
+            (housingData === undefined) ? housingData = []: housingData = [...data];
+            data = await page.evaluate((housingData) => {
+                let housing = [...document.querySelectorAll('#main-content > section > article')];
+                housing.forEach((house) => {
+                    let houseJson = {};
+                    try {
+                        houseJson.descripcion = house.querySelector('#main-content > section > article > div > a').innerText;
+                        houseJson.id = house.querySelector('#main-content > section > article > div > a').href.slice(35, -1);;
+                        houseJson.precio = house.querySelector('#main-content > section > article > div > div.row.price-row.clearfix > span').innerText;
+                        houseJson.habitaciones = house.querySelector('#main-content > section > article > div > span:nth-child(4)').innerText;
+                        houseJson.metros = house.querySelector('#main-content > section > article > div > span:nth-child(5)').innerText;
+                    } catch (exception) {
+                        console.log(exception);
+                    }
+                    housingData.push(houseJson)
+                    housingData.filter(el => el.length > 0)
+                });
+                return housingData;
+            }, housingData);
+            await page.waitFor(randomWait());
+            let pageUrl = url + `pagina-${i}.htm`;
+            await page.goto(pageUrl);
+            console.log(data);
+        }
         let urlCoords = `${url}/mapa-google`;
         await page.goto(urlCoords);
         await page.click('#map-zoom-high-button');
 
         let control = 0;
-        const responseCoord = new Promise(resolve => {
-            return page.on('response', async response => {
-                if (response.url().includes("/ajax/listingcontroller/listingmapajax.ajax")) {
-                    if (control === 0) {
-                        control++;
-                        return
-                    }
-                    const body = await response.text();
-                    const json = JSON.parse(body);
-                    resolve(JSON.stringify(json.jsonResponse.map.items.map((obj) => {
-                        let newObj = {};
-                        newObj.id = obj.adId;
-                        newObj.latitude = obj.latitude;
-                        newObj.longitude = obj.longitude;
-                        return newObj
-                    }))).substring(9, -1);
+        page.on('response', async response => {
+            if (response.url().includes("/ajax/listingcontroller/listingmapajax.ajax")) {
+                if (control === 0) {
+                    control++;
+                    return
                 }
-            });
+                const body = await response.text();
+                const json = JSON.parse(body);
+                const stringifiedJSON = JSON.stringify(json.jsonResponse.map.items.map((obj) => {
+                    let newObj = {};
+                    newObj.id = obj.adId;
+                    newObj.latitude = obj.latitude;
+                    newObj.longitude = obj.longitude;
+                    return newObj
+                }))
 
+                fs.writeFile('coordenadas-distrito-retiro-pacifico.json', stringifiedJSON, (err) => {
+                    if (err) console.log(err);
+                    console.log("Coordenadas: Successfully Written to File.", stringifiedJSON);
+                });
 
-        })
-        await responseCoord;
+            }
+        });
 
-        console.log('responseCoord', responseCoord);
-
-
-        // fs.writeFile('alquiler-distrito-retiro-pacifico.json', JSON.stringify(data), (err) => {
-        //     if (err) console.log(err);
-        //     console.log("Housting: Successfully Written to File.");
-        // });
-
-        fs.writeFile('coordenadas-distrito-retiro-pacifico.json', JSON.parse(responseCoord), (err) => {
+        fs.writeFile('alquiler-distrito-retiro-pacifico.json', JSON.stringify(data), (err) => {
             if (err) console.log(err);
-            console.log("Coordenadas: Successfully Written to File.", responseCoord);
+            console.log("Housting: Successfully Written to File.");
         });
     } catch (error) {
         console.log(error);
