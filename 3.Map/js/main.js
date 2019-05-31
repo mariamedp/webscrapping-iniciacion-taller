@@ -28,7 +28,7 @@ const getCoords = (id) => {
 let data = alquileres
     .map(a => {
         let { latitude, longitude } = getCoords(a.id);
-        let coords = [latitude, longitude];
+        let coords = [longitude, latitude];
         return {...a, coords }
     })
 
@@ -56,13 +56,18 @@ console.log(fromArrayToGeoJSON(data));
 
 // **********  MAPA   ***************** //
 //Añadir el mapa base:
-var map = L.map('map').setView([40.4034295, -3.688168], 13);
+var map = L.map('map').setView([40.4034295, -3.688168], 15);
+var geoData = fromArrayToGeoJSON(data);
 L.esri.basemapLayer('Streets').addTo(map);
 
-//Añadir nuestros datos:
-// var markers = data.map((marker) => {
-//     L.marker(marker.coords).bindPopup(`Descripción: ${marker.descripcion}, Habitaciones: ${marker.habitaciones} `)
-// });
-
-// var houses = L.layerGroup(markers);
-// L.control.layers(houses).addTo(map);
+function onEachFeature(feature, layer) {
+    var popupContent = `${feature.properties.descripcion},
+    Habitaciones: ${feature.properties.habitaciones},
+    Metros cuadrados: ${feature.properties.metros},
+    Precio: ${feature.properties.precio},
+    `
+    layer.bindPopup(popupContent);
+}
+L.geoJSON(geoData, {
+    onEachFeature: onEachFeature
+}).addTo(map);
