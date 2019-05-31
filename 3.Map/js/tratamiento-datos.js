@@ -1,7 +1,8 @@
 // **********  TRATAMIENTO DE DATOS   ***************** //
+const fs = require('fs');
+const coordinates = require('../assets/coordenadas-distrito-retiro-pacifico.json')
+const alquileres = require('../assets/alquiler-distrito-retiro-pacifico.json')
 
-import { coordinates } from '../assets/coordiantes-distrito-retiro-pacifico.js';
-import { alquileres } from '../assets/alquiler-distrito-retiro-pacifico.js/index.js';
 
 
 //Relacionar dos arrays en función de una propiedad de cada uno de los objetos que tiene en común:
@@ -23,6 +24,7 @@ let data = alquileres
         return {...a, coords }
     })
 
+console.log(data);
 
 const fromArrayToGeoJSON = (arr) => {
     const geoJSON = {
@@ -42,25 +44,9 @@ const fromArrayToGeoJSON = (arr) => {
     });
     return geoJSON;
 }
+
 console.log(fromArrayToGeoJSON(data));
-
-
-// **********  MAPA   ***************** //
-//Añadir el mapa base:
-// var map = L.map('map').setView([40.4034295, -3.688168], 15);
-// var geoData = fromArrayToGeoJSON(data);
-
-// copy(console.log(geoData));
-// L.esri.basemapLayer('Streets').addTo(map);
-
-// function onEachFeature(feature, layer) {
-//     var popupContent = `${feature.properties.descripcion},
-//                         Habitaciones: ${feature.properties.habitaciones},
-//                         Metros cuadrados: ${feature.properties.metros},
-//                         Precio: ${feature.properties.precio},
-//                         `
-//     layer.bindPopup(popupContent);
-// }
-// L.geoJSON(geoData, {
-//     onEachFeature: onEachFeature
-// }).addTo(map);
+fs.writeFile('housting-data.geojson', JSON.stringify(data), (err) => {
+    if (err) console.log(err);
+    console.log("Housting-data: Successfully Written to File.");
+});
