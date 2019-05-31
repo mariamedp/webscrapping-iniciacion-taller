@@ -1,98 +1,68 @@
-// //PARA TRAERNOS LOS DATOS//
-
-// // Primera opcion con funciones de async-await;
-// //Definimos url
-// const urlData = './data/alquiler-distrito-retiro-pacifico.json';
-// const urlCoordinates = './data/dataCoordinates.json';
-// //Nos traemos los datos de nuestro .json sobre datos de viviendas.
-// const getData = async() => {
-//         let responseData = await fetch(urlData);
-//         let houstingData = await responseData.json()
-//         return houstingData
-//     }
-//     //Nos traemos los datos de nuestro .json sobre datos de coordenadas.
-// const getCoordinates = async() => {
-//     let responseCoordinates = await fetch(urlCoordinates);
-//     let coordinatesData = await responseCoordinates.json();
-//     return coordinatesData;
-// }
-
-
-// Segunda opcion en crear modulos de .js
-//Definimos url
+// **********  DATOS   ***************** //
 
 import { coordinates } from './dataCoordinates.js';
 import { alquileres } from './alquiler-distrito-retiro-pacifico.js';
 
+//Eliminar de nuestro archivo de coordenadas todo aquello que no nos interesa:
+const FILTER_COORDS = coordinates.map((obj) => {
+    let newObj = {};
+    newObj.id = obj.adId;
+    newObj.latitude = obj.latitude;
+    newObj.longitude = obj.longitude;
+    return newObj
+});
 
-const COORDS_BY_ID = coordinates.reduce((old, cur, i, arr) => {
+
+//Relacionar dos arrays en función de una propiedad de cada uno de los objetos que tiene en común:
+const COORDS_BY_ID = FILTER_COORDS.reduce((old, cur, i, arr) => {
     old[cur.id] = cur;
     return old;
 }, {});
 
+
 const getCoords = (id) => {
-    COORDS_BY_ID.hasOwnProperty(id) ?
+    return COORDS_BY_ID.hasOwnProperty(id) ?
         COORDS_BY_ID[id] : { latitude: 0, longitude: 0 }
 }
 
-console.log(alquileres);
-// var lista = alquileres
-//     .map(a => {
-//         let { latitude, longitude } = getCoords(a.id);
-//         return {...a, lat: latitude, lon: longitude }
-//     })
+let data = alquileres
+    .map(a => {
+        let { latitude, longitude } = getCoords(a.id);
+        let coords = [latitude, longitude];
+        return {...a, coords }
+    })
 
 
-//console.log(lista);
-
-
-
-
-
-
-//Función para eliminar los propiedades del JSON que no nos interesan
-const filterData = (coordinatesData) => {
-    let filtered = coordinatesData.map((obj) => {
-        let newObj = {};
-        newObj.id = obj.adId;
-        newObj.latitude = obj.latitude;
-        newObj.longitude = obj.longitude;
-        return newObj
-    });
-    return filtered;
-}
-
-const getInfo = async() => {
-    let viviendas = await getData();
-    let coordinates = await getCoordinates();
-    let coordinatesFiltered = filterData(coordinates);
-    let info = viviendas
-        .concat(coordinatesFiltered)
-        .map((el) => {
-            el = Object.assign(el, el);
+const fromArrayToGeoJSON = (arr) => {
+    const geoJSON = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    const geoJsonFeatures = geoJSON.features;
+    arr.map((el) => {
+        geoJsonFeatures.push({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": el.coords
+            },
+            "properties": el
         })
-        // .filter((el, i, self) => el)
-        // .filter((el, i, self) => (
-        //     self.findIndex($el => $el.id === el.id) === i
-        // ));
-        //return `${viviendas[0].id} es igual a ${coordinatesFiltered[0].id}`
-        //return info;
-    console.log(viviendas);
-    return coordinatesFiltered;
-
+    });
+    return geoJSON;
 }
-getInfo()
-    .then(mensaje => console.log(mensaje))
-    .catch(e => console.log(e));
+console.log(fromArrayToGeoJSON(data));
 
 
-
-
-
-
-
-
-
+// **********  MAPA   ***************** //
+//Añadir el mapa base:
 var map = L.map('map').setView([40.4034295, -3.688168], 13);
-
 L.esri.basemapLayer('Streets').addTo(map);
+
+//Añadir nuestros datos:
+// var markers = data.map((marker) => {
+//     L.marker(marker.coords).bindPopup(`Descripción: ${marker.descripcion}, Habitaciones: ${marker.habitaciones} `)
+// });
+
+// var houses = L.layerGroup(markers);
+// L.control.layers(houses).addTo(map);
