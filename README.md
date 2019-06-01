@@ -22,9 +22,9 @@ Puppeteer es una librería de NodeJS que permite controlar Chrome sobre el proto
 
 Nos ha parecido interesante que podamos hacer una visualización de todo el contenido que hemos "scrapeado" en los pasos anteriores. La mejor manera que se nos ha ocurrido es haciendo un mapa.
 Para ello nos vamos a servir del API para Javascript de [ArcGIS](https://developers.arcgis.com/javascript/)
-**¡¡ Venga a darle caña !!**
+**¡¡ Despliega tu magia !!**
 
-## Resources
+## Recursos
 ### Webscrapping puppeteer
 - https://webscraper.io/
 - https://medium.com/@e_mad_ehsan/getting-started-with-puppeteer-and-chrome-headless-for-web-scrapping-6bf5979dee3e
